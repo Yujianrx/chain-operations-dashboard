@@ -1,8 +1,17 @@
 # 连锁经营大屏
 
+[![项目检查](https://github.com/zhujiaowo-sudo/chain-operations-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/zhujiaowo-sudo/chain-operations-dashboard/actions/workflows/ci.yml)
+![Vue 3](https://img.shields.io/badge/Vue-3-42b883) ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6) ![Three.js](https://img.shields.io/badge/Three.js-3D-111827) ![SQLite](https://img.shields.io/badge/SQLite-local%20snapshot-0f80cc)
+
 面向连锁门店经营分析的通用数据看板。基于 **Vue 3 + TypeScript + Vite + ECharts + Three.js**，提供三维省市下钻、渠道分析、会员储值及门店业绩前20名滚动榜单，配套 Node.js 只读接口和每日 SQLite 快照。
 
-**本仓库为去品牌、无业务数据版本。** 不含企业名称、品牌图片、真实门店和会员记录、经营指标、活动记录、数据库凭据或生产截图。首次打开使用空数据模板，接入自己的数据后再展示指标。
+**本仓库为去品牌、无业务数据版本。** 不含企业名称、品牌图片、真实门店和会员记录、经营指标、活动记录、数据库凭据或原始生产截图。首次打开使用空数据模板，接入自己的数据后再展示指标。
+
+## 界面预览
+
+以下展示图基于本地大屏截图脱敏制作，保留界面布局；LOGO、品牌、业务数值、门店和活动名称、日期与原始趋势均已处理。图片仅用于说明界面，不包含可用业务数据。
+
+![连锁经营大屏脱敏展示图](docs/images/dashboard-redacted.png)
 
 ## 功能
 
@@ -22,7 +31,7 @@
 使用 Node.js **22.13+**，推荐 **24 LTS**。项目采用 Node 内置 SQLite。
 
 ```bash
-git clone https://github.com/zhujiaowo-sudo/-.git chain-operations-dashboard
+git clone https://github.com/zhujiaowo-sudo/chain-operations-dashboard.git chain-operations-dashboard
 cd chain-operations-dashboard
 npm ci --ignore-scripts
 npm run dev
