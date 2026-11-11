@@ -1,4 +1,5 @@
-// Synthetic test-only inputs. Never served by the application.
+// Synthetic inputs for tests. The dev UI loads this only when the visitor
+// explicitly opens synthetic demo mode. It is not a public data file.
 import { addDays, dates, validateDataset } from "../../src/restaurant/model.mjs";
 const stores = [
   [

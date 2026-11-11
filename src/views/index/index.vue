@@ -35,7 +35,7 @@ import { refreshSeconds } from "@/restaurant/config";
 const filters = reactive<Filters>(defaults()),
   draft = reactive({ start: filters.start, end: filters.end }),
   data = shallowRef<Dataset | null>(null),
-  source = ref<DataSource | "import">("demo"),
+  source = ref<DataSource | "import" | "synthetic">("demo"),
   loading = ref(false),
   error = ref(""),
   rules = ref<HTMLDialogElement | null>(null),
@@ -44,7 +44,9 @@ const filters = reactive<Filters>(defaults()),
   snapshotState = ref<SnapshotStatus | null>(null),
   updated = ref(""),
   clock = ref(""),
-  imported = ref<Dataset | null>(null);
+  imported = ref<Dataset | null>(null),
+  synthetic = shallowRef<Dataset | null>(null);
+const devSynthetic = import.meta.env.DEV;
 let datePreset: "month" | "week" | "custom" = "month";
 let controller: AbortController | undefined,
   sequence = 0,
@@ -112,10 +114,13 @@ const storeName = computed(
 );
 const chart = computed(() => trendOption(summary.value?.trend || [], true));
 const signalName = computed(() =>
-  data.value?.meta.mode === "demo"
-    ? "尚未接入数据 · 空模板"
-    : "真实模式 · " +
-      (source.value === "clickhouse" ? "本地每日快照" : "静态快照"),
+  source.value === "synthetic" ||
+  (data.value?.meta.mode === "demo" && data.value.stores.length > 0)
+    ? "演示模式 · 合成数据"
+    : data.value?.meta.mode === "demo"
+      ? "尚未接入数据 · 空模板"
+      : "真实模式 · " +
+        (source.value === "clickhouse" ? "本地每日快照" : "静态快照"),
 );
 const maxDataDate = computed(() =>
   source.value === "clickhouse"
@@ -168,7 +173,9 @@ async function load() {
     const next =
       source.value === "import"
         ? imported.value
-        : await loadDataset(source.value, controller.signal, requested);
+        : source.value === "synthetic"
+          ? synthetic.value
+          : await loadDataset(source.value, controller.signal, requested);
     if (ticket !== sequence) return;
     if (!next) throw Error("请先导入有效 JSON 数据包");
     committedFilters.value = requested;
@@ -244,13 +251,57 @@ async function applyDates(
       );
     Object.assign(filters, { start: draft.start, end: draft.end, period });
     error.value = "";
-    if (source.value !== "demo" && source.value !== "import") await load();
+    if (
+      source.value !== "demo" &&
+      source.value !== "import" &&
+      source.value !== "synthetic"
+    )
+      await load();
   } catch (e) {
     error.value = (e as Error).message;
   }
 }
+async function openSynthetic() {
+  if (!import.meta.env.DEV) {
+    error.value = "合成演示只在本机执行 npm run dev 时可用。";
+    source.value = "demo";
+    synthetic.value = null;
+    await load();
+    return;
+  }
+  error.value = "";
+  try {
+    const { loadSyntheticDataset } = await import(
+      "@/restaurant/load-synthetic"
+    );
+    synthetic.value = await loadSyntheticDataset();
+    const start = "2026-10-01",
+      end = "2026-10-29";
+    datePreset = "custom";
+    Object.assign(filters, {
+      start,
+      end,
+      period: "range",
+      regionId: "",
+      province: "",
+      city: "",
+      storeId: "",
+    });
+    Object.assign(draft, { start, end });
+    await load();
+  } catch (e) {
+    error.value = (e as Error).message;
+    source.value = "demo";
+    synthetic.value = null;
+    await load();
+  }
+}
 async function changeMode() {
   resetScope();
+  if (source.value === "synthetic") {
+    await openSynthetic();
+    return;
+  }
   await load();
 }
 async function quick(type: string) {
@@ -316,7 +367,13 @@ watch(
   },
 );
 onMounted(() => {
-  load();
+  if (
+    devSynthetic &&
+    new URLSearchParams(location.search).get("demo") === "synthetic"
+  ) {
+    source.value = "synthetic";
+    void openSynthetic();
+  } else void load();
   updateClock();
   timer = setInterval(updateClock, 1000);
   refreshTimer = setInterval(() => {
@@ -447,7 +504,7 @@ onBeforeUnmount(() => {
           data-testid="source-select"
         >
           <option value="demo">空数据模板</option>
-
+          <option v-if="devSynthetic" value="synthetic">合成演示</option>
           <option value="clickhouse">真实数据 · 每日快照</option>
           <option value="static">静态真实 JSON</option>
           <option v-if="imported" value="import">已导入 JSON</option></select
