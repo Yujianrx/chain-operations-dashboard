@@ -1,6 +1,6 @@
 # 连锁经营大屏
 
-[![项目检查](https://github.com/zhujiaowo-sudo/chain-operations-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/zhujiaowo-sudo/chain-operations-dashboard/actions/workflows/ci.yml)
+[![项目检查](https://github.com/Yujianrx/chain-operations-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Yujianrx/chain-operations-dashboard/actions/workflows/ci.yml)
 ![Vue 3](https://img.shields.io/badge/Vue-3-42b883) ![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6) ![Three.js](https://img.shields.io/badge/Three.js-3D-111827) ![SQLite](https://img.shields.io/badge/SQLite-local%20snapshot-0f80cc)
 
 面向连锁门店经营分析的通用数据看板。基于 **Vue 3 + TypeScript + Vite + ECharts + Three.js**，提供三维省市下钻、渠道分析、会员储值及门店业绩前20名滚动榜单，配套 Node.js 只读接口和每日 SQLite 快照。
@@ -9,7 +9,7 @@
 
 ## 界面预览
 
-以下图片直接截取自大屏的合成演示数据模式，已去除品牌和 LOGO。中国地图使用项目原有地理资源与3D渲染，截图未经图像重绘。图中的门店、营收、会员和活动数值均为人工构造的演示数据，不是真实经营记录。默认应用仍使用空数据模板。
+以下图片直接截取自大屏的合成演示数据模式，已去除品牌和 LOGO。中国地图使用项目原有地理资源与3D渲染，截图未经图像重绘。图中的门店、营收、会员和活动数值均为人工构造的演示数据，不是真实经营记录。默认应用仍使用空数据模板。打开演示的步骤见下方「怎么打开合成演示」。
 
 ![连锁经营大屏演示数据截图（无品牌LOGO）](docs/images/dashboard-demo.jpg)
 
@@ -31,13 +31,27 @@
 使用 Node.js **22.13+**，推荐 **24 LTS**。项目采用 Node 内置 SQLite。
 
 ```bash
-git clone https://github.com/zhujiaowo-sudo/chain-operations-dashboard.git chain-operations-dashboard
+git clone https://github.com/Yujianrx/chain-operations-dashboard.git chain-operations-dashboard
 cd chain-operations-dashboard
 npm ci --ignore-scripts
 npm run dev
 ```
 
 打开 <http://127.0.0.1:8112/>。默认展示空模板，**不需要数据库，也不会自动请求任何企业数据库**。只看界面时可运行 `npm run dev:ui`。
+
+### 怎么打开合成演示
+
+`npm run dev` 打开的是空数据模板。页面外壳会出来，但营收、门店、排行和地图上的点都是空的，顶部写着「尚未接入数据 · 空模板」。这是正常的，不是页面没有渲染。
+
+上面的截图才是合成演示。里面的门店和数字是程序编出来的样例，不是真实经营记录。想看同样的画面：
+
+1. 先运行 `npm run dev`。只看页面、不需要接口时，可以改运行 `npm run dev:ui`。
+2. 浏览器打开 <http://127.0.0.1:8112/?demo=synthetic>。
+3. 也可以在页面右上角的数据源里选择「合成演示」。
+
+演示会把统计日期放到 **2026-10-01 至 2026-10-29**。会员和活动的样例只写在这个区间里，用别的日期时这两块可能是空的，营收和地图仍然有数。想回到空白页，把数据源改回「空数据模板」。
+
+这份样例只在本机开发模式里、而且只有你主动打开时才会读取。它不会写进公开数据文件，也不会去连任何数据库。
 
 ### 接入自己的数据
 
@@ -87,4 +101,4 @@ npm run sync:data         # 显式同步自己的数据源
 
 地理资源和业务数据相互独立。候选边界资源只用于明确标识的开发预览；正式构建保留来源、授权、审图及完整性校验，未验收时使用业务网络视图。详情见 [地图资源说明](docs/MAPS.md)。
 
-本项目基于 [IofTV-Screen-Vue3](https://github.com/daidaibg/IofTV-Screen-Vue3) 改造，上游 MIT 许可见 [LICENSE](LICENSE)。3D 实现使用 Three.js、d3-geo，并参考相关开源项目，第三方许可见 [third_party](third_party/NOTICE.md)。地图资源的独立使用条件不由代码许可证替代。
+本项目基于 [IofTV-Screen-Vue3](https://github.com/daidaibg/IofTV-Screen-Vue3) 改造，上游 MIT 许可（Copyright (c) 2022 daidai）见 [LICENSE](LICENSE)。Yujianrx 在 2026 年的修改另有一行版权声明，也写在同一份 LICENSE 里，原来的许可条款没有删。3D 实现使用 Three.js、d3-geo，并参考相关开源项目，第三方许可见 [third_party](third_party/NOTICE.md)。地图资源的独立使用条件不由代码许可证替代。

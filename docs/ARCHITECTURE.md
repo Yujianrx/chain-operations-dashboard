@@ -25,4 +25,4 @@ flowchart LR
 - `server/snapshot-reader.mjs`：按范围读取 SQLite，保持会员和订单去重口径。
 - `server/clickhouse.mjs`：只读 SQL、HTTPS、资源和超时约束。
 
-本仓库默认使用空模板。测试夹具由 `tests/fixtures/` 中代码人工构造，仅用于验证数学与接口行为，不会被前端加载或打包到静态业务数据文件。
+本仓库默认使用空模板。测试夹具由 `tests/fixtures/` 中代码人工构造，用于验证数学与接口行为。本机执行 `npm run dev` 时，访问者也可以主动打开合成演示来读取同一份样例。它不会写入 `public/`，也不会进入真实数据入口。
